@@ -1,0 +1,17 @@
+# Cloudflare Pages Redirects & Rewrites
+# Place in repository root (Build/portfolio-deploy/_redirects)
+
+# ─── SPA Fallback (if using client-side routing) ───
+# Not needed for Unity WebGL - it's a single page app
+
+# ─── Legacy URL Redirects (if any) ───
+# /old-page  /new-page  301
+
+# ─── Unity WebGL Specific ───
+# Ensure /Build/* files are served correctly (no rewrite needed)
+
+# ─── Mobile Redirect (already handled in index.html JS) ───
+# /mobile  /static  302
+
+# ─── Custom Domain Aliases (if needed) ───
+# www.thesynthax.space/*  https://thesynthax.space/:splat  301
