@@ -1,16 +1,19 @@
 # ─── Unity WebGL Build Files (Immutable, Long Cache) ───
 /Build/build.data.unityweb
   Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/octet-stream
   Content-Encoding: br
   Vary: Accept-Encoding
 
 /Build/build.wasm.unityweb
   Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/octet-stream
   Content-Encoding: br
   Vary: Accept-Encoding
 
 /Build/build.framework.js.unityweb
   Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/octet-stream
   Content-Encoding: br
   Vary: Accept-Encoding
 
