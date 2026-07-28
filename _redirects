@@ -1,0 +1,8 @@
+# Mobile redirect (keep existing logic in index.html, but this handles direct asset requests)
+/static/*  https://thesynthax.space/static/:splat  302
+
+# Unity build files - ensure they're served from correct path
+/WebGLBuild/*  /:splat  200
+
+# SPA fallback for any future client-side routing
+/*  /index.html  200
