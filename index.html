@@ -77,9 +77,59 @@
       productName: "Portfolio",
       productVersion: "1.0.0",
       showBanner: unityShowBanner,
-      devicePixelRatio: 1,
-      matchWebGLToCanvasSize: true,
+      // NOTE: config.devicePixelRatio is Unity's documented way to force low-DPI
+      // rendering, but on macOS Chrome/Safari it was found to have NO effect —
+      // canvas.devicePixelRatio still reported 2 after load, so the WebGL drawing
+      // buffer was still rendering at ~2x linear resolution (~4x the pixel count),
+      // which is what caused severe lag on Mac Retina displays in Chrome/Safari
+      // specifically (Firefox on the same machine was unaffected, and Windows/
+      // Linux were unaffected since they report devicePixelRatio 1 natively).
+      //
+      // Fix: we take over canvas sizing manually instead of trusting Unity's
+      // internal DPR handling (see resizeCanvas() below). matchWebGLToCanvasSize
+      // must be FALSE so Unity does not fight with our manual width/height sets.
+      matchWebGLToCanvasSize: false,
     };
+
+    // ---- Manual canvas resolution control (DPR cap fix) ----
+    // Unity's built-in devicePixelRatio config was unreliable on macOS Chrome/
+    // Safari, so we compute and set the actual WebGL drawing buffer size
+    // ourselves: canvas.width/height (the render resolution) = the canvas's
+    // CSS/layout size (canvas.clientWidth/clientHeight, driven by style.css)
+    // multiplied by a capped device pixel ratio. Capping DPR to 1 whenever the
+    // browser reports >1 quarters (or more) the pixel count that has to be
+    // shaded/composited every frame on any high-DPI display (Retina Macs,
+    // 200%-scaled Windows/Linux, high-DPI Android/iOS), which is the actual
+    // performance win here — this has nothing to do with GPU "power", it's
+    // pure fragment-shader/fill-rate cost scaling with pixel count.
+    function resizeCanvas() {
+      var effectiveDPR = Math.min(window.devicePixelRatio || 1, 1);
+      var width = Math.round(canvas.clientWidth * effectiveDPR);
+      var height = Math.round(canvas.clientHeight * effectiveDPR);
+      if (canvas.width !== width) canvas.width = width;
+      if (canvas.height !== height) canvas.height = height;
+    }
+
+    // Debounce so rapid resize/fullscreen events don't thrash canvas.width/height
+    // (each assignment reallocates the WebGL drawing buffer).
+    var resizeCanvasDebounced = (function () {
+      var pending = null;
+      return function () {
+        if (pending) clearTimeout(pending);
+        pending = setTimeout(function () {
+          pending = null;
+          resizeCanvas();
+        }, 100);
+      };
+    })();
+
+    // Set the correct buffer size before Unity ever initializes, and keep it
+    // correct across window resizes and fullscreen toggles (both change
+    // canvas.clientWidth/clientHeight without us reloading the page).
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvasDebounced);
+    document.addEventListener("fullscreenchange", resizeCanvasDebounced);
+    document.addEventListener("webkitfullscreenchange", resizeCanvasDebounced); // Safari
 
     if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
       var meta = document.createElement('meta');
@@ -167,6 +217,7 @@
     var script = document.createElement("script");
     script.src = loaderUrl;
     script.onload = () => {
+      resizeCanvas(); // re-sync buffer size right before init in case layout shifted
       createUnityInstance(canvas, config, (progress) => {
         progressBarFull.style.width = 100 * progress + "%";
         loadingProgress = Math.max(loadingProgress, progress);
