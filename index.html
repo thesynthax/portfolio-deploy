@@ -181,6 +181,16 @@
         loadingBar.style.display = "none";
         fadeOutLoaderAndRemove();
 
+        const forcedDPR = 1;
+        // Get the presentation style dimensions
+        const rect = canvas.getBoundingClientRect();
+
+        // Hardcode the underlying WebGL render buffer size
+        canvas.width = rect.width * forcedDPR;
+        canvas.height = rect.height * forcedDPR;
+
+        //window.devicePixelRatio = 1;
+
       }).catch((message) => {
         alert(message);
       });
