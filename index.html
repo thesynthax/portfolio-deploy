@@ -2,6 +2,25 @@
 <html lang="en-us">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BC4Q6R71NL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+
+    // Consent Mode v2: default to denied until the user makes a choice.
+    // Google still receives anonymous, cookieless pings for modeling even
+    // when denied, but no cookies/identifiers are set until consent is granted.
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied'
+    });
+
+    gtag('js', new Date());
+    gtag('config', 'G-BC4Q6R71NL');
+  </script>
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <title>TheSynthax's Portfolio</title>
@@ -32,7 +51,62 @@
     <div id="unity-warning"> </div>
   </div>
 
+  <!-- Cookie consent banner (Google Consent Mode v2) -->
+  <div id="consent-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <p id="consent-text">
+      This site uses cookies for anonymous analytics to help improve the experience.
+      <a href="/privacy">Learn more</a>.
+    </p>
+    <div id="consent-actions">
+      <button id="consent-reject" type="button">Reject</button>
+      <button id="consent-accept" type="button">Accept</button>
+    </div>
+  </div>
+
   <script>
+    // ---- Cookie consent (Google Consent Mode v2) ----
+    (function () {
+      var STORAGE_KEY = "consentChoice"; // "granted" | "denied"
+      var banner = document.getElementById("consent-banner");
+      var acceptBtn = document.getElementById("consent-accept");
+      var rejectBtn = document.getElementById("consent-reject");
+
+      function applyConsent(choice) {
+        gtag('consent', 'update', {
+          'ad_storage': choice,
+          'ad_user_data': choice,
+          'ad_personalization': choice,
+          'analytics_storage': choice
+        });
+      }
+
+      var stored = null;
+      try {
+        stored = localStorage.getItem(STORAGE_KEY);
+      } catch (e) {
+        // localStorage unavailable (private mode, etc.) — treat as no choice stored
+      }
+
+      if (stored === "granted" || stored === "denied") {
+        applyConsent(stored);
+      } else if (banner) {
+        banner.classList.add("visible");
+      }
+
+      function choose(choice) {
+        applyConsent(choice);
+        try {
+          localStorage.setItem(STORAGE_KEY, choice);
+        } catch (e) {
+          // ignore storage failures
+        }
+        if (banner) banner.classList.remove("visible");
+      }
+
+      if (acceptBtn) acceptBtn.addEventListener("click", function () { choose("granted"); });
+      if (rejectBtn) rejectBtn.addEventListener("click", function () { choose("denied"); });
+    })();
+
     // Service worker registration (leave as-is)
     window.addEventListener("load", function () {
       if ("serviceWorker" in navigator) {

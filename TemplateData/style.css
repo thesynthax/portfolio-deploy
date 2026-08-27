@@ -62,3 +62,84 @@ body { padding: 0; margin: 0 }
   to { text-shadow: 0 0 18px #00ff99; }
 }
 
+
+/* ---- Cookie consent banner ---- */
+#consent-banner {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(560px, 92%);
+  background: rgba(10, 10, 10, 0.92);
+  border: 1px solid #00ff99;
+  border-radius: 8px;
+  padding: 16px 20px;
+  z-index: 10; /* above unity UI (max z-index used elsewhere is 4) */
+  box-shadow: 0 0 18px rgba(0, 255, 153, 0.25);
+  font-family: monospace;
+  color: #e6e6e6;
+}
+
+#consent-banner.visible {
+  display: block;
+}
+
+#consent-text {
+  margin: 0 0 12px 0;
+  font-size: 0.85em;
+  line-height: 1.4;
+}
+
+#consent-text a {
+  color: #00ff99;
+  text-decoration: underline;
+}
+
+#consent-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+#consent-actions button {
+  font-family: monospace;
+  font-size: 0.85em;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #00ff99;
+  background: transparent;
+  color: #e6e6e6;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+#consent-actions button:hover,
+#consent-actions button:focus {
+  background: #00ff99;
+  color: #000;
+}
+
+#consent-accept {
+  background: #00ff99;
+  color: #000;
+}
+
+#consent-accept:hover,
+#consent-accept:focus {
+  background: transparent;
+  color: #e6e6e6;
+}
+
+@media (max-width: 480px) {
+  #consent-banner {
+    bottom: 12px;
+    padding: 14px 16px;
+  }
+  #consent-actions {
+    justify-content: stretch;
+  }
+  #consent-actions button {
+    flex: 1;
+  }
+}
